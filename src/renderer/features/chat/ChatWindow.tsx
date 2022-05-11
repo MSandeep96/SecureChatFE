@@ -31,15 +31,13 @@ export const ChatWindow = (): ReactElement => {
   return (
     <Box h="100%" w="100%">
       <VStack h="100%">
-        <Box flex="1">
+        <VStack w="100%" flex="1" spacing="2">
           {msgs.map((msg) => (
-            <Box key={msg}>
-              <Box bgColor="green.100" p="4" borderRadius="sm">
-                {msg}
-              </Box>
+            <Box w="100%" key={msg} bgColor="green.100" p="4" borderRadius="sm">
+              <Text color="black">{msg}</Text>
             </Box>
           ))}
-        </Box>
+        </VStack>
         <InputGroup>
           <Input
             placeholder="Type a message..."

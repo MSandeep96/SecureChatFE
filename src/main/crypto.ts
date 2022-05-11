@@ -24,11 +24,13 @@ export class Crypto {
 
   secretKeyMap = new Map<string, Buffer>();
 
+  // generate public and private keys for the user using the prime
   constructor() {
     this.myDiffieHellman = cryptoLib.createDiffieHellman(prime, 'hex');
     this.myPublicKey = this.myDiffieHellman.generateKeys('hex');
   }
 
+  // calculate the secret key for the user after receiving the public key of another user
   calculateSecretKey(publicKey: string, fromUsername: string) {
     const secret = this.myDiffieHellman.computeSecret(
       Buffer.from(publicKey, 'hex')
@@ -36,11 +38,16 @@ export class Crypto {
     this.secretKeyMap.set(fromUsername, secret);
   }
 
+  // generate a 256 bit derived key from the secret key
   getDerivedKey(username: string) {
     const secret = this.secretKeyMap.get(username);
     return hkdf(secret, length, { salt, hash });
   }
 
+  // generate a derived key from the secret key
+  // generate a IV from Fortuna PRNG
+  // encrypt the message using AES-256-CTR
+  // send the message and IV to the user
   async encrypt(message: string, toUsername: string) {
     const derivedKey = this.getDerivedKey(toUsername);
     const iv = cryptoLib.randomBytes(16);
@@ -49,12 +56,12 @@ export class Crypto {
     return {
       message: encrypted + cipher.final('hex'),
       iv: iv.toString('hex'),
-      ivBuffer: iv,
     };
   }
 
+  // generate a derived key from the secret key
+  // decipher the message using AES-256-CTR and the IV received from the user
   decrypt(message: string, iv: string, fromUsername: string) {
-    console.log(Array.from(this.secretKeyMap));
     const derivedKey = this.getDerivedKey(fromUsername);
     const decipher = cryptoLib.createDecipheriv(
       'aes-256-ctr',

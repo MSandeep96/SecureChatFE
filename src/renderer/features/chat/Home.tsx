@@ -23,7 +23,7 @@ export const Home = (): ReactElement => {
     <HStack p={4} h="100vh" alignItems="flex-start">
       <ActiveUsers />
       <Divider orientation="vertical" />
-      <Box flex="1">
+      <Box h="100%" flex="1">
         <ChatWindow />
       </Box>
     </HStack>
